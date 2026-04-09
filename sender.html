@@ -17,9 +17,7 @@
     --muted: #7a6a6a;
     --border: rgba(180,120,120,0.25);
   }
-
   * { margin: 0; padding: 0; box-sizing: border-box; }
-
   body {
     background: var(--paper);
     color: var(--ink);
@@ -29,306 +27,140 @@
       radial-gradient(ellipse at 20% 50%, rgba(201,75,106,0.06) 0%, transparent 60%),
       radial-gradient(ellipse at 80% 20%, rgba(184,134,11,0.05) 0%, transparent 50%);
   }
-
-  /* GRAIN OVERLAY */
   body::before {
     content: '';
     position: fixed; inset: 0;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
     pointer-events: none; z-index: 9999; opacity: 0.5;
   }
-
   header {
     padding: 2.5rem 2rem 1.5rem;
     border-bottom: 1px solid var(--border);
     display: flex; align-items: baseline; gap: 1rem;
   }
-
   header h1 {
     font-family: 'Cormorant Garamond', serif;
-    font-size: 2rem;
-    font-weight: 300;
-    letter-spacing: -0.01em;
-    color: var(--rose-dark);
+    font-size: 2rem; font-weight: 300;
+    letter-spacing: -0.01em; color: var(--rose-dark);
   }
+  header span { font-size: 0.65rem; color: var(--muted); letter-spacing: 0.15em; text-transform: uppercase; }
+  .container { max-width: 760px; margin: 0 auto; padding: 3rem 2rem; }
 
-  header span {
-    font-size: 0.65rem;
-    color: var(--muted);
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-  }
-
-  .container {
-    max-width: 760px;
-    margin: 0 auto;
-    padding: 3rem 2rem;
-  }
-
-  /* CONFIG SECTION */
   .config-card {
-    border: 1px solid var(--border);
-    border-radius: 2px;
-    padding: 2rem;
-    margin-bottom: 2rem;
-    background: rgba(255,255,255,0.5);
-    backdrop-filter: blur(4px);
+    border: 1px solid var(--border); border-radius: 2px;
+    padding: 2rem; margin-bottom: 2rem;
+    background: rgba(255,255,255,0.5); backdrop-filter: blur(4px);
   }
-
   .config-card label {
-    display: block;
-    font-size: 0.65rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 0.5rem;
+    display: block; font-size: 0.65rem; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--muted); margin-bottom: 0.5rem;
   }
-
-  .config-card input[type="text"],
-  .config-card textarea,
-  .config-card input[type="url"] {
-    width: 100%;
-    background: transparent;
-    border: none;
-    border-bottom: 1px solid var(--border);
-    padding: 0.6rem 0;
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.25rem;
-    font-style: italic;
-    color: var(--ink);
-    outline: none;
-    transition: border-color 0.2s;
-    resize: none;
+  .config-card textarea {
+    width: 100%; background: transparent; border: none;
+    border-bottom: 1px solid var(--border); padding: 0.6rem 0;
+    font-family: 'Cormorant Garamond', serif; font-size: 1.25rem;
+    font-style: italic; color: var(--ink); outline: none;
+    transition: border-color 0.2s; resize: none;
   }
-
-  .config-card input:focus,
-  .config-card textarea:focus {
-    border-bottom-color: var(--rose);
-  }
-
-  .field-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2rem;
-    margin-bottom: 1.5rem;
-  }
-
+  .config-card textarea:focus { border-bottom-color: var(--rose); }
   .field-group { margin-bottom: 1.5rem; }
   .field-group:last-child { margin-bottom: 0; }
 
-  /* GAS URL */
-  .gas-notice {
-    font-size: 0.65rem;
-    letter-spacing: 0.05em;
-    color: var(--muted);
-    margin-top: 0.4rem;
-    line-height: 1.6;
-  }
-
-  /* BUTTON */
   .btn-generate {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    background: var(--rose-dark);
-    color: #fff;
-    border: none;
-    padding: 0.85rem 2rem;
-    font-family: 'DM Mono', monospace;
-    font-size: 0.7rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    cursor: pointer;
-    border-radius: 1px;
-    transition: background 0.2s, transform 0.1s;
-    margin-top: 1.5rem;
+    display: flex; align-items: center; gap: 0.75rem;
+    background: var(--rose-dark); color: #fff; border: none;
+    padding: 0.85rem 2rem; font-family: 'DM Mono', monospace;
+    font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase;
+    cursor: pointer; border-radius: 1px;
+    transition: background 0.2s, transform 0.1s; margin-top: 1.5rem;
   }
   .btn-generate:hover { background: var(--rose); }
   .btn-generate:active { transform: scale(0.98); }
   .btn-generate .heart { font-size: 0.9rem; animation: pulse 1.5s ease-in-out infinite; }
   @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.2)} }
 
-  /* GENERATED LINK */
   .link-box {
-    display: none;
-    margin-top: 1.5rem;
-    border: 1px dashed var(--rose);
-    border-radius: 2px;
-    padding: 1rem 1.25rem;
-    background: rgba(240,208,216,0.15);
+    display: none; margin-top: 1.5rem;
+    border: 1px dashed var(--rose); border-radius: 2px;
+    padding: 1rem 1.25rem; background: rgba(240,208,216,0.15);
   }
   .link-box.visible { display: block; animation: fadeIn 0.4s ease; }
-  .link-label {
-    font-size: 0.6rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--rose-dark);
-    margin-bottom: 0.4rem;
-  }
-  .link-value {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.8rem;
-    color: var(--ink);
-    word-break: break-all;
-  }
+  .link-label { font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--rose-dark); margin-bottom: 0.4rem; }
+  .link-value { font-family: 'DM Mono', monospace; font-size: 0.8rem; color: var(--ink); word-break: break-all; }
   .copy-btn {
-    margin-top: 0.75rem;
-    background: none;
-    border: 1px solid var(--border);
-    padding: 0.35rem 0.8rem;
-    font-family: 'DM Mono', monospace;
-    font-size: 0.62rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    cursor: pointer;
-    color: var(--muted);
-    border-radius: 1px;
-    transition: all 0.2s;
+    margin-top: 0.75rem; background: none; border: 1px solid var(--border);
+    padding: 0.35rem 0.8rem; font-family: 'DM Mono', monospace;
+    font-size: 0.62rem; letter-spacing: 0.08em; text-transform: uppercase;
+    cursor: pointer; color: var(--muted); border-radius: 1px; transition: all 0.2s;
   }
   .copy-btn:hover { border-color: var(--rose); color: var(--rose); }
 
-  /* DIVIDER */
   .section-title {
-    font-size: 0.62rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 1.5rem;
+    font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 1.5rem;
     display: flex; align-items: center; gap: 1rem;
   }
-  .section-title::after {
-    content: ''; flex: 1; height: 1px; background: var(--border);
-  }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
-  /* POLL BUTTON */
-  .poll-controls {
-    display: flex; gap: 1rem; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap;
-  }
+  .poll-controls { display: flex; gap: 1rem; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; }
   .btn-poll {
-    background: none;
-    border: 1px solid var(--border);
-    padding: 0.5rem 1.2rem;
-    font-family: 'DM Mono', monospace;
-    font-size: 0.65rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    cursor: pointer;
-    color: var(--muted);
-    border-radius: 1px;
-    transition: all 0.2s;
+    background: none; border: 1px solid var(--border); padding: 0.5rem 1.2rem;
+    font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.08em;
+    text-transform: uppercase; cursor: pointer; color: var(--muted); border-radius: 1px; transition: all 0.2s;
   }
   .btn-poll:hover { border-color: var(--gold); color: var(--gold); }
   .btn-poll.active { border-color: var(--rose); color: var(--rose); background: rgba(201,75,106,0.05); }
 
-  .poll-status {
-    font-size: 0.62rem;
-    color: var(--muted);
-    letter-spacing: 0.05em;
-  }
+  .poll-status { font-size: 0.62rem; color: var(--muted); letter-spacing: 0.05em; }
   .poll-status .dot {
-    display: inline-block;
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: var(--muted);
-    margin-right: 0.4rem;
-    vertical-align: middle;
+    display: inline-block; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--muted); margin-right: 0.4rem; vertical-align: middle;
   }
   .poll-status.live .dot { background: #3dba6c; animation: blink 1s ease-in-out infinite; }
   @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
-  /* TABLE */
-  .data-table-wrap {
-    overflow-x: auto;
-    border: 1px solid var(--border);
-    border-radius: 2px;
-  }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.72rem;
-  }
-  thead tr {
-    background: rgba(139,45,66,0.06);
-    border-bottom: 1px solid var(--border);
-  }
+  .data-table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 2px; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.72rem; }
+  thead tr { background: rgba(139,45,66,0.06); border-bottom: 1px solid var(--border); }
   th {
-    text-align: left;
-    padding: 0.75rem 1rem;
-    font-size: 0.58rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--muted);
-    font-weight: 400;
+    text-align: left; padding: 0.75rem 1rem; font-size: 0.58rem;
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); font-weight: 400;
   }
-  td {
-    padding: 0.75rem 1rem;
-    border-bottom: 1px solid var(--border);
-    font-family: 'DM Mono', monospace;
-    color: var(--ink);
-    vertical-align: middle;
-  }
+  td { padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); font-family: 'DM Mono', monospace; color: var(--ink); vertical-align: middle; }
   tbody tr:last-child td { border-bottom: none; }
   tbody tr { transition: background 0.15s; }
   tbody tr:hover { background: rgba(201,75,106,0.03); }
 
   .badge-fresh {
-    background: rgba(61,186,108,0.12);
-    color: #2a8a50;
-    border: 1px solid rgba(61,186,108,0.3);
-    border-radius: 2px;
-    padding: 0.15rem 0.5rem;
-    font-size: 0.58rem;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
+    background: rgba(61,186,108,0.12); color: #2a8a50;
+    border: 1px solid rgba(61,186,108,0.3); border-radius: 2px;
+    padding: 0.15rem 0.5rem; font-size: 0.58rem; letter-spacing: 0.06em; text-transform: uppercase;
   }
   .badge-exp {
-    background: rgba(180,80,80,0.1);
-    color: #a04040;
-    border: 1px solid rgba(180,80,80,0.25);
-    border-radius: 2px;
-    padding: 0.15rem 0.5rem;
-    font-size: 0.58rem;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
+    background: rgba(180,80,80,0.1); color: #a04040;
+    border: 1px solid rgba(180,80,80,0.25); border-radius: 2px;
+    padding: 0.15rem 0.5rem; font-size: 0.58rem; letter-spacing: 0.06em; text-transform: uppercase;
   }
-
-  .empty-state {
-    text-align: center;
-    padding: 3rem 1rem;
-    color: var(--muted);
-  }
+  .empty-state { text-align: center; padding: 3rem 1rem; color: var(--muted); }
   .empty-state .icon { font-size: 2rem; margin-bottom: 0.75rem; opacity: 0.4; }
   .empty-state p { font-size: 0.72rem; letter-spacing: 0.05em; }
 
-  /* MAP LINK */
   a.map-link {
-    color: var(--rose-dark);
-    text-decoration: none;
-    border-bottom: 1px dashed var(--rose-light);
-    font-size: 0.68rem;
-    transition: color 0.15s;
+    color: var(--rose-dark); text-decoration: none;
+    border-bottom: 1px dashed var(--rose-light); font-size: 0.68rem; transition: color 0.15s;
   }
   a.map-link:hover { color: var(--rose); }
 
-  /* COUNTDOWN */
-  .countdown {
-    font-size: 0.62rem;
-    color: var(--muted);
-    font-family: 'DM Mono', monospace;
-  }
+  .countdown { font-size: 0.62rem; color: var(--muted); font-family: 'DM Mono', monospace; }
   .countdown.urgent { color: #c94b4b; }
 
   @keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
 
   .toast {
     position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%);
-    background: var(--ink); color: var(--paper);
-    padding: 0.6rem 1.5rem;
-    font-size: 0.65rem; letter-spacing: 0.08em;
-    border-radius: 2px;
-    opacity: 0; pointer-events: none;
-    transition: opacity 0.3s;
-    z-index: 1000;
+    background: var(--ink); color: var(--paper); padding: 0.6rem 1.5rem;
+    font-size: 0.65rem; letter-spacing: 0.08em; border-radius: 2px;
+    opacity: 0; pointer-events: none; transition: opacity 0.3s; z-index: 1000;
   }
   .toast.show { opacity: 1; }
 </style>
@@ -342,23 +174,10 @@
 
 <div class="container">
 
-  <!-- CONFIG -->
   <div class="config-card">
     <div class="field-group">
-      <label>URL de tu Google Apps Script (Web App)</label>
-      <input type="url" id="gasUrl" placeholder="https://script.google.com/macros/s/…/exec">
-      <p class="gas-notice">Pega aquí la URL de tu despliegue de Apps Script. Se guarda localmente en tu navegador.</p>
-    </div>
-
-    <div class="field-group">
-      <label>URL base del frontend receptor</label>
-      <input type="url" id="baseUrl" placeholder="https://tuusuario.github.io/receptor.html">
-      <p class="gas-notice">La URL de la página receiver.html que generará el link compartible.</p>
-    </div>
-
-    <div class="field-group">
       <label>Mensaje que verá el destinatario</label>
-      <textarea id="messageText" rows="2" placeholder="Te amo, eres la mejor persona del mundo ♡">Te amo, eres la mejor persona del mundo ♡</textarea>
+      <textarea id="messageText" rows="2">Te amo, eres la mejor persona del mundo ♡</textarea>
     </div>
 
     <button class="btn-generate" onclick="generateLink()">
@@ -367,13 +186,12 @@
     </button>
 
     <div class="link-box" id="linkBox">
-      <div class="link-label">Link generado</div>
+      <div class="link-label">Link generado — comparte este link</div>
       <div class="link-value" id="linkValue"></div>
       <button class="copy-btn" onclick="copyLink()">Copiar link</button>
     </div>
   </div>
 
-  <!-- PANEL -->
   <div class="section-title">Coordenadas capturadas</div>
 
   <div class="poll-controls">
@@ -413,48 +231,31 @@
 <div class="toast" id="toast"></div>
 
 <script>
-  // ──────────────────────────────────────────────
-  // PERSISTENCE
-  // ──────────────────────────────────────────────
+  // ══════════════════════════════════════════════
+  //  URLs fijas — no es necesario cambiar nada aquí
+  // ══════════════════════════════════════════════
+  const GAS_URL  = 'https://script.google.com/macros/s/AKfycbwgJUb5FKl4TFwX0LKMcU_B2-IQ0yD0Xntv22Y3RZAjPCvtDknX96VLE49RDmNZm-0l-A/exec';
+  const BASE_URL = 'https://ferarmenta96.github.io/mensaje-de-amor/receiver.html';
+  // ══════════════════════════════════════════════
+
   const $ = id => document.getElementById(id);
 
-  window.addEventListener('load', () => {
-    $('gasUrl').value  = localStorage.getItem('gasUrl')  || '';
-    $('baseUrl').value = localStorage.getItem('baseUrl') || '';
-  });
-
-  $('gasUrl').addEventListener('input',  () => localStorage.setItem('gasUrl',  $('gasUrl').value.trim()));
-  $('baseUrl').addEventListener('input', () => localStorage.setItem('baseUrl', $('baseUrl').value.trim()));
-
-  // ──────────────────────────────────────────────
-  // GENERATE LINK
-  // ──────────────────────────────────────────────
-  let currentId = null;
-
+  // ── GENERAR LINK ───────────────────────────────
   async function generateLink() {
-    const gasUrl  = $('gasUrl').value.trim();
-    const baseUrl = $('baseUrl').value.trim();
-    const msg     = $('messageText').value.trim() || 'Te amo, eres la mejor persona del mundo ♡';
-
-    if (!gasUrl)  return showToast('Ingresa la URL de Apps Script');
-    if (!baseUrl) return showToast('Ingresa la URL base del receptor');
-
-    const id = 'MSG-' + Math.random().toString(36).substr(2,8).toUpperCase();
-    currentId = id;
+    const msg = $('messageText').value.trim() || 'Te amo, eres la mejor persona del mundo ♡';
+    const id  = 'MSG-' + Math.random().toString(36).substr(2,8).toUpperCase();
 
     try {
-      const res = await fetch(gasUrl, {
+      await fetch(GAS_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'createLink', id, message: msg })
       });
-      if (!res.ok) throw new Error('Error al guardar en Apps Script');
     } catch(e) {
-      showToast('No se pudo conectar a Apps Script — revisa la URL');
-      // Still show the link locally even if GAS fails (offline mode)
+      showToast('Advertencia: no se pudo registrar en Apps Script');
     }
 
-    const link = `${baseUrl}?id=${id}&msg=${encodeURIComponent(msg)}`;
+    const link = `${BASE_URL}?id=${id}`;
     $('linkValue').textContent = link;
     $('linkBox').classList.add('visible');
   }
@@ -465,9 +266,7 @@
       .catch(() => showToast('No se pudo copiar'));
   }
 
-  // ──────────────────────────────────────────────
-  // POLLING
-  // ──────────────────────────────────────────────
+  // ── POLLING ────────────────────────────────────
   let pollInterval = null;
   let isPolling = false;
 
@@ -476,52 +275,48 @@
   }
 
   function startPolling() {
-    const gasUrl = $('gasUrl').value.trim();
-    if (!gasUrl) return showToast('Ingresa la URL de Apps Script primero');
     isPolling = true;
-    $('pollBtn').textContent  = '■ Detener monitoreo';
+    $('pollBtn').textContent = '■ Detener monitoreo';
     $('pollBtn').classList.add('active');
     $('pollStatus').innerHTML = '<span class="dot"></span> En vivo';
     $('pollStatus').classList.add('live');
     fetchData();
-    pollInterval = setInterval(fetchData, 10000); // cada 10s
+    pollInterval = setInterval(fetchData, 8000);
   }
 
   function stopPolling() {
     isPolling = false;
     clearInterval(pollInterval);
-    $('pollBtn').textContent  = '▶ Iniciar monitoreo';
+    $('pollBtn').textContent = '▶ Iniciar monitoreo';
     $('pollBtn').classList.remove('active');
     $('pollStatus').innerHTML = '<span class="dot"></span> Inactivo';
     $('pollStatus').classList.remove('live');
   }
 
   async function fetchData() {
-    const gasUrl = $('gasUrl').value.trim();
-    if (!gasUrl) return;
     try {
-      const res = await fetch(gasUrl + '?action=getData');
+      // Apps Script doGet recibe ?action=getData via e.parameter.action
+      const res  = await fetch(`${GAS_URL}?action=getData`, { redirect: 'follow' });
       const json = await res.json();
       renderTable(json.data || []);
     } catch(e) {
-      // silently fail, keep showing old data
+      console.warn('fetchData error:', e);
     }
   }
 
   function renderTable(rows) {
     const tbody = $('tableBody');
     if (!rows.length) {
-      tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="icon">♡</div><p>Sin capturas aún.</p></div></td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="icon">♡</div><p>Sin capturas aún. Esperando que alguien abra el link…</p></div></td></tr>`;
       return;
     }
 
     const now = Date.now();
     tbody.innerHTML = rows.map(r => {
-      const ts  = new Date(r.timestamp);
-      const age = now - ts.getTime(); // ms
-      const remaining = 300000 - age; // 5 min in ms
-      const fresh = remaining > 0;
-      const badge = fresh
+      const ts        = new Date(r.timestamp);
+      const remaining = 300000 - (now - ts.getTime());
+      const fresh     = remaining > 0;
+      const badge     = fresh
         ? `<span class="badge-fresh">Activo</span>`
         : `<span class="badge-exp">Expirado</span>`;
       const countdown = fresh
@@ -546,9 +341,6 @@
     return `(${m}:${String(s % 60).padStart(2,'0')} restante)`;
   }
 
-  // ──────────────────────────────────────────────
-  // TOAST
-  // ──────────────────────────────────────────────
   let toastTimer;
   function showToast(msg) {
     const t = $('toast');
