@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crear Mensaje Secreto</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a0a0a;
+    --paper: #faf6f0;
+    --rose: #c94b6a;
+    --rose-light: #f0d0d8;
+    --rose-dark: #8b2d42;
+    --gold: #b8860b;
+    --muted: #7a6a6a;
+    --border: rgba(180,120,120,0.25);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'DM Mono', monospace;
+    min-height: 100vh;
+    background-image:
+      radial-gradient(ellipse at 20% 50%, rgba(201,75,106,0.06) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 20%, rgba(184,134,11,0.05) 0%, transparent 50%);
+  }
+
+  /* GRAIN OVERLAY */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 9999; opacity: 0.5;
+  }
+
+  header {
+    padding: 2.5rem 2rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: baseline; gap: 1rem;
+  }
+
+  header h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem;
+    font-weight: 300;
+    letter-spacing: -0.01em;
+    color: var(--rose-dark);
+  }
+
+  header span {
+    font-size: 0.65rem;
+    color: var(--muted);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  .container {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 3rem 2rem;
+  }
+
+  /* CONFIG SECTION */
+  .config-card {
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    background: rgba(255,255,255,0.5);
+    backdrop-filter: blur(4px);
+  }
+
+  .config-card label {
+    display: block;
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.5rem;
+  }
+
+  .config-card input[type="text"],
+  .config-card textarea,
+  .config-card input[type="url"] {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--border);
+    padding: 0.6rem 0;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.25rem;
+    font-style: italic;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.2s;
+    resize: none;
+  }
+
+  .config-card input:focus,
+  .config-card textarea:focus {
+    border-bottom-color: var(--rose);
+  }
+
+  .field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .field-group { margin-bottom: 1.5rem; }
+  .field-group:last-child { margin-bottom: 0; }
+
+  /* GAS URL */
+  .gas-notice {
+    font-size: 0.65rem;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+    margin-top: 0.4rem;
+    line-height: 1.6;
+  }
+
+  /* BUTTON */
+  .btn-generate {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: var(--rose-dark);
+    color: #fff;
+    border: none;
+    padding: 0.85rem 2rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 1px;
+    transition: background 0.2s, transform 0.1s;
+    margin-top: 1.5rem;
+  }
+  .btn-generate:hover { background: var(--rose); }
+  .btn-generate:active { transform: scale(0.98); }
+  .btn-generate .heart { font-size: 0.9rem; animation: pulse 1.5s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.2)} }
+
+  /* GENERATED LINK */
+  .link-box {
+    display: none;
+    margin-top: 1.5rem;
+    border: 1px dashed var(--rose);
+    border-radius: 2px;
+    padding: 1rem 1.25rem;
+    background: rgba(240,208,216,0.15);
+  }
+  .link-box.visible { display: block; animation: fadeIn 0.4s ease; }
+  .link-label {
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--rose-dark);
+    margin-bottom: 0.4rem;
+  }
+  .link-value {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--ink);
+    word-break: break-all;
+  }
+  .copy-btn {
+    margin-top: 0.75rem;
+    background: none;
+    border: 1px solid var(--border);
+    padding: 0.35rem 0.8rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    color: var(--muted);
+    border-radius: 1px;
+    transition: all 0.2s;
+  }
+  .copy-btn:hover { border-color: var(--rose); color: var(--rose); }
+
+  /* DIVIDER */
+  .section-title {
+    font-size: 0.62rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 1.5rem;
+    display: flex; align-items: center; gap: 1rem;
+  }
+  .section-title::after {
+    content: ''; flex: 1; height: 1px; background: var(--border);
+  }
+
+  /* POLL BUTTON */
+  .poll-controls {
+    display: flex; gap: 1rem; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap;
+  }
+  .btn-poll {
+    background: none;
+    border: 1px solid var(--border);
+    padding: 0.5rem 1.2rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    color: var(--muted);
+    border-radius: 1px;
+    transition: all 0.2s;
+  }
+  .btn-poll:hover { border-color: var(--gold); color: var(--gold); }
+  .btn-poll.active { border-color: var(--rose); color: var(--rose); background: rgba(201,75,106,0.05); }
+
+  .poll-status {
+    font-size: 0.62rem;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+  .poll-status .dot {
+    display: inline-block;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--muted);
+    margin-right: 0.4rem;
+    vertical-align: middle;
+  }
+  .poll-status.live .dot { background: #3dba6c; animation: blink 1s ease-in-out infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  /* TABLE */
+  .data-table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.72rem;
+  }
+  thead tr {
+    background: rgba(139,45,66,0.06);
+    border-bottom: 1px solid var(--border);
+  }
+  th {
+    text-align: left;
+    padding: 0.75rem 1rem;
+    font-size: 0.58rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 400;
+  }
+  td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--border);
+    font-family: 'DM Mono', monospace;
+    color: var(--ink);
+    vertical-align: middle;
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr { transition: background 0.15s; }
+  tbody tr:hover { background: rgba(201,75,106,0.03); }
+
+  .badge-fresh {
+    background: rgba(61,186,108,0.12);
+    color: #2a8a50;
+    border: 1px solid rgba(61,186,108,0.3);
+    border-radius: 2px;
+    padding: 0.15rem 0.5rem;
+    font-size: 0.58rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .badge-exp {
+    background: rgba(180,80,80,0.1);
+    color: #a04040;
+    border: 1px solid rgba(180,80,80,0.25);
+    border-radius: 2px;
+    padding: 0.15rem 0.5rem;
+    font-size: 0.58rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--muted);
+  }
+  .empty-state .icon { font-size: 2rem; margin-bottom: 0.75rem; opacity: 0.4; }
+  .empty-state p { font-size: 0.72rem; letter-spacing: 0.05em; }
+
+  /* MAP LINK */
+  a.map-link {
+    color: var(--rose-dark);
+    text-decoration: none;
+    border-bottom: 1px dashed var(--rose-light);
+    font-size: 0.68rem;
+    transition: color 0.15s;
+  }
+  a.map-link:hover { color: var(--rose); }
+
+  /* COUNTDOWN */
+  .countdown {
+    font-size: 0.62rem;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+  }
+  .countdown.urgent { color: #c94b4b; }
+
+  @keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
+
+  .toast {
+    position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%);
+    background: var(--ink); color: var(--paper);
+    padding: 0.6rem 1.5rem;
+    font-size: 0.65rem; letter-spacing: 0.08em;
+    border-radius: 2px;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.3s;
+    z-index: 1000;
+  }
+  .toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Mensaje Secreto</h1>
+  <span>Panel del remitente</span>
+</header>
+
+<div class="container">
+
+  <!-- CONFIG -->
+  <div class="config-card">
+    <div class="field-group">
+      <label>URL de tu Google Apps Script (Web App)</label>
+      <input type="url" id="gasUrl" placeholder="https://script.google.com/macros/s/…/exec">
+      <p class="gas-notice">Pega aquí la URL de tu despliegue de Apps Script. Se guarda localmente en tu navegador.</p>
+    </div>
+
+    <div class="field-group">
+      <label>URL base del frontend receptor</label>
+      <input type="url" id="baseUrl" placeholder="https://tuusuario.github.io/receptor.html">
+      <p class="gas-notice">La URL de la página receiver.html que generará el link compartible.</p>
+    </div>
+
+    <div class="field-group">
+      <label>Mensaje que verá el destinatario</label>
+      <textarea id="messageText" rows="2" placeholder="Te amo, eres la mejor persona del mundo ♡">Te amo, eres la mejor persona del mundo ♡</textarea>
+    </div>
+
+    <button class="btn-generate" onclick="generateLink()">
+      <span class="heart">♡</span>
+      Generar link secreto
+    </button>
+
+    <div class="link-box" id="linkBox">
+      <div class="link-label">Link generado</div>
+      <div class="link-value" id="linkValue"></div>
+      <button class="copy-btn" onclick="copyLink()">Copiar link</button>
+    </div>
+  </div>
+
+  <!-- PANEL -->
+  <div class="section-title">Coordenadas capturadas</div>
+
+  <div class="poll-controls">
+    <button class="btn-poll" id="pollBtn" onclick="togglePolling()">▶ Iniciar monitoreo</button>
+    <div class="poll-status" id="pollStatus">
+      <span class="dot"></span> Inactivo
+    </div>
+  </div>
+
+  <div class="data-table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>ID del link</th>
+          <th>Latitud</th>
+          <th>Longitud</th>
+          <th>Capturado</th>
+          <th>Estado</th>
+          <th>Mapa</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody">
+        <tr>
+          <td colspan="6">
+            <div class="empty-state">
+              <div class="icon">♡</div>
+              <p>Sin datos aún. Genera un link e inicia el monitoreo.</p>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  // ──────────────────────────────────────────────
+  // PERSISTENCE
+  // ──────────────────────────────────────────────
+  const $ = id => document.getElementById(id);
+
+  window.addEventListener('load', () => {
+    $('gasUrl').value  = localStorage.getItem('gasUrl')  || '';
+    $('baseUrl').value = localStorage.getItem('baseUrl') || '';
+  });
+
+  $('gasUrl').addEventListener('input',  () => localStorage.setItem('gasUrl',  $('gasUrl').value.trim()));
+  $('baseUrl').addEventListener('input', () => localStorage.setItem('baseUrl', $('baseUrl').value.trim()));
+
+  // ──────────────────────────────────────────────
+  // GENERATE LINK
+  // ──────────────────────────────────────────────
+  let currentId = null;
+
+  async function generateLink() {
+    const gasUrl  = $('gasUrl').value.trim();
+    const baseUrl = $('baseUrl').value.trim();
+    const msg     = $('messageText').value.trim() || 'Te amo, eres la mejor persona del mundo ♡';
+
+    if (!gasUrl)  return showToast('Ingresa la URL de Apps Script');
+    if (!baseUrl) return showToast('Ingresa la URL base del receptor');
+
+    const id = 'MSG-' + Math.random().toString(36).substr(2,8).toUpperCase();
+    currentId = id;
+
+    try {
+      const res = await fetch(gasUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'createLink', id, message: msg })
+      });
+      if (!res.ok) throw new Error('Error al guardar en Apps Script');
+    } catch(e) {
+      showToast('No se pudo conectar a Apps Script — revisa la URL');
+      // Still show the link locally even if GAS fails (offline mode)
+    }
+
+    const link = `${baseUrl}?id=${id}&msg=${encodeURIComponent(msg)}`;
+    $('linkValue').textContent = link;
+    $('linkBox').classList.add('visible');
+  }
+
+  function copyLink() {
+    navigator.clipboard.writeText($('linkValue').textContent)
+      .then(() => showToast('Link copiado ♡'))
+      .catch(() => showToast('No se pudo copiar'));
+  }
+
+  // ──────────────────────────────────────────────
+  // POLLING
+  // ──────────────────────────────────────────────
+  let pollInterval = null;
+  let isPolling = false;
+
+  function togglePolling() {
+    isPolling ? stopPolling() : startPolling();
+  }
+
+  function startPolling() {
+    const gasUrl = $('gasUrl').value.trim();
+    if (!gasUrl) return showToast('Ingresa la URL de Apps Script primero');
+    isPolling = true;
+    $('pollBtn').textContent  = '■ Detener monitoreo';
+    $('pollBtn').classList.add('active');
+    $('pollStatus').innerHTML = '<span class="dot"></span> En vivo';
+    $('pollStatus').classList.add('live');
+    fetchData();
+    pollInterval = setInterval(fetchData, 10000); // cada 10s
+  }
+
+  function stopPolling() {
+    isPolling = false;
+    clearInterval(pollInterval);
+    $('pollBtn').textContent  = '▶ Iniciar monitoreo';
+    $('pollBtn').classList.remove('active');
+    $('pollStatus').innerHTML = '<span class="dot"></span> Inactivo';
+    $('pollStatus').classList.remove('live');
+  }
+
+  async function fetchData() {
+    const gasUrl = $('gasUrl').value.trim();
+    if (!gasUrl) return;
+    try {
+      const res = await fetch(gasUrl + '?action=getData');
+      const json = await res.json();
+      renderTable(json.data || []);
+    } catch(e) {
+      // silently fail, keep showing old data
+    }
+  }
+
+  function renderTable(rows) {
+    const tbody = $('tableBody');
+    if (!rows.length) {
+      tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="icon">♡</div><p>Sin capturas aún.</p></div></td></tr>`;
+      return;
+    }
+
+    const now = Date.now();
+    tbody.innerHTML = rows.map(r => {
+      const ts  = new Date(r.timestamp);
+      const age = now - ts.getTime(); // ms
+      const remaining = 300000 - age; // 5 min in ms
+      const fresh = remaining > 0;
+      const badge = fresh
+        ? `<span class="badge-fresh">Activo</span>`
+        : `<span class="badge-exp">Expirado</span>`;
+      const countdown = fresh
+        ? `<span class="countdown${remaining < 60000 ? ' urgent' : ''}">${formatMs(remaining)}</span>`
+        : '';
+      const mapUrl = `https://www.google.com/maps?q=${r.lat},${r.lng}`;
+
+      return `<tr>
+        <td>${r.id}</td>
+        <td>${Number(r.lat).toFixed(6)}</td>
+        <td>${Number(r.lng).toFixed(6)}</td>
+        <td>${ts.toLocaleTimeString('es-MX')} ${countdown}</td>
+        <td>${badge}</td>
+        <td><a class="map-link" href="${mapUrl}" target="_blank">Ver mapa ↗</a></td>
+      </tr>`;
+    }).join('');
+  }
+
+  function formatMs(ms) {
+    const s = Math.floor(ms / 1000);
+    const m = Math.floor(s / 60);
+    return `(${m}:${String(s % 60).padStart(2,'0')} restante)`;
+  }
+
+  // ──────────────────────────────────────────────
+  // TOAST
+  // ──────────────────────────────────────────────
+  let toastTimer;
+  function showToast(msg) {
+    const t = $('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+  }
+</script>
+</body>
+</html>
